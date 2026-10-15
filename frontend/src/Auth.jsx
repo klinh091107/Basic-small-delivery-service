@@ -3,7 +3,6 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { api } from "./api";
 import { Icon, Loading, Notice } from "./components";
 
-import ProduceArt from "./ProduceArt";
 
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
@@ -124,15 +123,17 @@ export function LoginPage() {
   return (
     <main className="login-page">
       <div className="login-brand">
+        <div className="login-brand-anchor">
         <span className="brand-mark">
           <Icon name="leaf" size={26} />
         </span>
         <span>
           FreshRoute<small>PRODUCE DELIVERY</small>
         </span>
+        </div>
       </div>
       <div className="login-layout">
-        <div className="login-story"><span className="eyebrow">FROM FRESH PICKS TO FRONT DOORS</span><h2>Fresh orders.<br />Thoughtful deliveries.</h2><p>Fruit, vegetables and produce boxes.<br />For households and businesses.</p><ProduceArt /></div>
+        <div className="login-story"><span className="eyebrow">FROM FRESH PICKS TO FRONT DOORS</span><h2>Fresh orders.<br />Thoughtful deliveries.</h2><p>Fruit, vegetables and produce boxes.<br />For households and businesses.</p><img className="login-illustration" src="/illustrations/online-groceries-pana.svg" alt="Online grocery shopping illustration" width="500" height="500" /></div>
       <section className="login-card" aria-labelledby="login-title">
         <div className="eyebrow">STAFF WORKSPACE</div>
         <h1 id="login-title">Welcome back</h1>

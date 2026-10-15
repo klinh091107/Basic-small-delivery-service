@@ -69,9 +69,9 @@ export default function App() {
         <header className="workspace-banner">
           <div className="banner-inner">
             <div className="banner-copy">
-              <span className="eyebrow">FRESH FRUIT. VEGETABLES. PRODUCE BOXES.</span>
-              <h1>Fresh produce, on its way.</h1>
-              <p>Fresh fruit, vegetables and produce boxes for households and businesses.</p>
+              <span className="eyebrow">FRESHROUTE ORDER MANAGEMENT</span>
+              <h1>Every order. One workspace.</h1>
+              <p>Manage orders from multiple channels, organise deliveries, and keep track of every update.</p>
               <span className="workspace-welcome">Welcome, {employee.full_name}</span>
             </div>
             <ProduceArt />

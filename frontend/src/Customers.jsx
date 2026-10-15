@@ -143,6 +143,11 @@ export function CustomerChoice({ selected, onSelect }) {
   const result = useApi("/customers", refresh);
   const [mode, setMode] = useState("existing");
   const [success, setSuccess] = useState("");
+  const [search, setSearch] = useState("");
+  const normalize = (text) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "d").toLowerCase();
+  const matches = (result.data || []).filter((customer) =>
+    normalize(`${customer.full_name} ${customer.phone}`).includes(normalize(search.trim())),
+  );
   return (
     <section className="card form-card">
       <div className="section-heading">
@@ -167,6 +172,7 @@ export function CustomerChoice({ selected, onSelect }) {
           className={mode === "new" ? "active" : ""}
           onClick={() => {
             setMode("new");
+            setSearch("");
             onSelect(null);
             setSuccess("");
           }}
@@ -181,6 +187,7 @@ export function CustomerChoice({ selected, onSelect }) {
           onCancel={() => setMode("existing")}
           onSaved={(customer) => {
             onSelect(customer);
+            setSearch(customer.full_name);
             setMode("existing");
             setRefresh((n) => n + 1);
             setSuccess("Customer created. Complete the order below.");
@@ -194,28 +201,47 @@ export function CustomerChoice({ selected, onSelect }) {
             <Notice error={result.error} />
           ) : (
             <div className="field">
-              <label htmlFor="select-customer">
-                Customer <span>*</span>
+              <label htmlFor="search-customer">
+                Search customers <span>*</span>
               </label>
-              <select
-                id="select-customer"
-                value={selected?.id || ""}
-                onChange={(e) => {
-                  onSelect(
-                    result.data.find(
-                      (customer) => customer.id === Number(e.target.value),
-                    ) || null,
-                  );
+              <input
+                id="search-customer"
+                type="search"
+                placeholder="Type a customer name or phone number…"
+                autoComplete="off"
+                value={search}
+                aria-describedby="customer-search-help"
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  onSelect(null);
                   setSuccess("");
                 }}
-              >
-                <option value="">Select a customer</option>
-                {result.data.map((customer) => (
-                  <option key={customer.id} value={customer.id}>
-                    {customer.full_name} · {customer.phone}
-                  </option>
-                ))}
-              </select>
+              />
+              <p id="customer-search-help" className="field-help">
+                Type to filter, then select a customer below. Use the phone number or address to distinguish matching names.
+              </p>
+              {!selected && result.data.length > 0 && (
+                <>
+                  <p className="field-help" role="status">
+                    {matches.length ? `${matches.length} customers found` : "No matching customers. Try another name or choose New customer."}
+                  </p>
+                  <ul className="customer-search-results" aria-label="Matching customers">
+                    {matches.map((customer) => (
+                      <li key={customer.id}>
+                        <button type="button" onClick={() => {
+                          onSelect(customer);
+                          setSearch(customer.full_name);
+                          setSuccess("");
+                        }}>
+                          <strong>{customer.full_name}</strong>
+                          <span>{customer.phone}</span>
+                          <small>{customer.address}</small>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
               {!result.data.length && (
                 <p className="field-help">
                   No customers yet. Choose “New customer” to create the first
