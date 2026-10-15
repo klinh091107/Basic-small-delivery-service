@@ -4,6 +4,7 @@ from sqlalchemy import select
 
 from .config import STATUSES, STATUS_TRANSITIONS
 from .models import Customer, Order, OrderItem, OrderStatusHistory, Product, utc_now
+from .validation import validate_total_quantity
 
 
 def get_or_404(db, model, record_id):
@@ -35,6 +36,11 @@ def create_order(db, payload):
 
 def update_order(db, order, payload):
     changes = payload.model_dump(exclude_unset=True)
+    # Enforce the new limit even when a legacy order's items are omitted.
+    try:
+        validate_total_quantity(payload.items if "items" in changes else order.items)
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from error
     delivery_date = changes.get("scheduled_delivery_date", order.scheduled_delivery_date)
     if delivery_date < order.received_date:
         raise HTTPException(422, "Scheduled delivery date cannot precede received date.")

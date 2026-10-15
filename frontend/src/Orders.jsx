@@ -1,3 +1,4 @@
+import { totalQuantity } from "./validation";
 import { useEffect, useId, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { api, formatDate, formatTime, today, useApi, useDebounce } from "./api";
@@ -222,12 +223,19 @@ function ProduceItems({ items, onChange, products }) {
 
 function OrderEditor({ order, customer, onSaved }) {
   const products = useApi("/products");
-  const { transitions, statuses } = useConfig();
+  const {
+    transitions,
+    statuses,
+    payment_methods,
+    max_order_quantity,
+    staff_examples,
+  } = useConfig();
   const [values, setValues] = useState({
     received_date: order?.received_date || today(),
     scheduled_delivery_date: order?.scheduled_delivery_date || today(),
     delivery_address: order?.delivery_address || customer?.address || "",
     responsible_staff_name: order?.responsible_staff_name || "",
+    payment_method: order?.payment_method || "",
     status: order?.status || "",
   });
   const [items, setItems] = useState(
@@ -249,6 +257,8 @@ function OrderEditor({ order, customer, onSaved }) {
   );
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const quantityTotal = totalQuantity(items);
+  const overLimit = quantityTotal.greaterThan(max_order_quantity);
   useEffect(() => {
     if (!order)
       setValues((current) => ({
@@ -284,6 +294,10 @@ function OrderEditor({ order, customer, onSaved }) {
       );
     if (values.scheduled_delivery_date < values.received_date)
       return setError("Scheduled delivery date cannot precede received date.");
+    if (!Object.hasOwn(payment_methods, values.payment_method))
+      return setError(
+        "Choose a payment method: Cash, QR Banking, or Credit Card.",
+      );
     if (!items.length || items.some((item) => !item.product_id))
       return setError(
         "Choose a valid product from the suggestions for every item. An order needs at least one item.",
@@ -295,6 +309,10 @@ function OrderEditor({ order, customer, onSaved }) {
       )
     )
       return setError("Each quantity must be greater than zero.");
+    if (overLimit)
+      return setError(
+        `Total quantity across all products must not exceed ${max_order_quantity}.`,
+      );
     if (new Set(items.map((item) => item.product_id)).size !== items.length)
       return setError(
         "Duplicate product lines are not allowed. Combine their quantities into one line.",
@@ -306,6 +324,7 @@ function OrderEditor({ order, customer, onSaved }) {
       scheduled_delivery_date: values.scheduled_delivery_date,
       delivery_address: values.delivery_address,
       responsible_staff_name: values.responsible_staff_name,
+      payment_method: values.payment_method,
       items: items.map((item) => ({
         product_id: Number(item.product_id),
         quantity: Number(item.quantity),
@@ -391,8 +410,35 @@ function OrderEditor({ order, customer, onSaved }) {
                 {...field("responsible_staff_name")}
                 required
                 maxLength={150}
-                placeholder="Enter staff member’s name"
+                placeholder="e.g. Lan Nguyen — Sales Coordinator"
+                list="staff-examples"
               />
+              <datalist id="staff-examples">
+                {staff_examples.map((staff) => (
+                  <option key={staff} value={staff} />
+                ))}
+              </datalist>
+            </div>
+            <div className="field full-width">
+              <label htmlFor="payment_method">
+                Payment method <span>*</span>
+              </label>
+              <select {...field("payment_method")} required>
+                <option value="">
+                  {order && !order.payment_method
+                    ? "Not recorded — select a payment method"
+                    : "Select a payment method"}
+                </option>
+                {Object.entries(payment_methods).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+              <span className="field-help">
+                Record the customer's chosen payment method. Payment is handled
+                separately.
+              </span>
             </div>
           </div>
         </section>
@@ -406,6 +452,16 @@ function OrderEditor({ order, customer, onSaved }) {
               {items.length} {items.length === 1 ? "item" : "items"}
             </span>
           </div>
+          <p
+            className={`quantity-summary ${overLimit ? "over-limit" : ""}`}
+            role="status"
+          >
+            Total quantity:{" "}
+            <strong>
+              {quantityTotal.toString()} / {max_order_quantity}
+            </strong>
+            {overLimit && " — Reduce quantities before saving."}
+          </p>
           {products.loading ? (
             <Loading text="Loading produce catalogue…" />
           ) : products.error ? (

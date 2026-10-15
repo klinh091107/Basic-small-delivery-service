@@ -55,3 +55,14 @@ No remote deployment was performed. The temporary development/preview servers we
 - Automated tests verified access denial for unauthenticated reads/writes, valid and invalid login, code normalization, salted password hashes, HttpOnly/SameSite cookies, hashed session storage, expiry, forged tokens, token rotation, logout revocation, required request headers, login rate limiting, and idempotent account seeding.
 - Added demo employee `NV001`; existing customer/order data was preserved. The local frontend/backend were restarted and left running for the user's demo.
 - The previous business walkthrough remains historical evidence; the new sign-in submission/logout were verified through API tests, not a completed browser walkthrough.
+
+## 2026-10-15 — FreshRoute updates
+
+- FooYes-inspired cream/coral styling, horizontal navigation, original produce-delivery SVG, and updated login layout. The existing produce catalogue remains unchanged.
+- Cash, QR Banking and Credit Card are recorded as payment preferences. No payment gateway is connected.
+- Combined quantity limit: 50 across all order lines, enforced in frontend and backend. International phone validation and E.164 normalization apply on customer create/update.
+- Staff suggestions now include realistic job titles. Legacy database upgrade preserves unknown payment methods as NULL.
+- Backend: 91 tests passed, including payment validation, quantity boundaries, failed-update atomicity, international phones and idempotent schema migration. One dependency deprecation warning remains.
+- Frontend: 2 validation tests passed; production build passed. Phone metadata is split into a separate bundle.
+- Browser: checked Orders and New Order; quantity 51 shows the limit warning. Checked 390px mobile layout with document width equal to viewport width. No test orders saved to the live database.
+- Deleted the 13 previous orders and their related items/history at the user's request. Final live database check: 0 orders; 10 original products retained.

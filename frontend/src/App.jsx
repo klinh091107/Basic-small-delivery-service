@@ -13,6 +13,7 @@ import {
   OrderDetailPage,
   OrdersPage,
 } from "./Orders";
+import ProduceArt from "./ProduceArt";
 import { StaffMenu, useAuth } from "./Auth";
 
 export default function App() {
@@ -27,7 +28,7 @@ export default function App() {
       : "Orders";
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = `${section} · Produce Desk`;
+    document.title = `${section} · FreshRoute Produce Delivery`;
   }, [location.pathname, section]);
   return (
     <div className="app-shell">
@@ -40,10 +41,10 @@ export default function App() {
             <Icon name="leaf" size={25} />
           </span>
           <span>
-            Produce Desk<small>ORDER MANAGEMENT</small>
+            FreshRoute<small>PRODUCE DELIVERY</small>
           </span>
         </Link>
-        <div className="nav-label">WORKSPACE</div>
+        
         <nav aria-label="Main navigation">
           <NavLink to="/" end>
             <Icon name="orders" />
@@ -62,26 +63,23 @@ export default function App() {
             Deliveries
           </NavLink>
         </nav>
-        <div className="sidebar-footer">
-          <span className="workspace-dot" />
-          <div>
-            {employee.full_name}
-            <small>{employee.employee_code} · Staff workspace</small>
-          </div>
-        </div>
+        <StaffMenu />
       </aside>
       <div className="main-shell">
-        <header className="topbar">
-          <div>
-            <span className="subtle">Workspace</span>
-            <Icon name="arrow" size={13} />
-            <span>{section}</span>
+        <header className="workspace-banner">
+          <div className="banner-inner">
+            <div className="banner-copy">
+              <span className="eyebrow">FRESH FRUIT. VEGETABLES. PRODUCE BOXES.</span>
+              <h1>Fresh produce, on its way.</h1>
+              <p>Fresh fruit, vegetables and produce boxes for households and businesses.</p>
+              <span className="workspace-welcome">Welcome, {employee.full_name}</span>
+            </div>
+            <ProduceArt />
           </div>
-          <StaffMenu />
         </header>
         <main id="main-content" tabIndex={-1}>
           {config.loading ? (
-            <Loading text="Connecting to Produce Desk…" />
+            <Loading text="Connecting to FreshRoute Produce Delivery…" />
           ) : config.error ? (
             <>
               <Notice error={config.error} />
@@ -116,7 +114,7 @@ export default function App() {
           )}
         </main>
         <footer className="app-footer">
-          <span>Produce Desk</span>
+          <span>FreshRoute Produce Delivery</span>
           <span>Simple records. Clear progress.</span>
         </footer>
       </div>

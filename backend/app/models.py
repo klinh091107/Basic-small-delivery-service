@@ -50,7 +50,10 @@ class Product(Base):
 
 class Order(AuditFields, Base):
     __tablename__ = "orders"
-    __table_args__ = (CheckConstraint("scheduled_delivery_date >= received_date"),)
+    __table_args__ = (
+        CheckConstraint("scheduled_delivery_date >= received_date"),
+        CheckConstraint("payment_method IN ('cash', 'qr_banking', 'credit_card')"),
+    )
     id: Mapped[int] = mapped_column(primary_key=True)
     # NULL exists only inside the creation transaction, before the ID is assigned.
     order_number: Mapped[str | None] = mapped_column(String(30), unique=True, nullable=True)
@@ -59,6 +62,7 @@ class Order(AuditFields, Base):
     scheduled_delivery_date: Mapped[date] = mapped_column(Date, index=True)
     delivery_address: Mapped[str] = mapped_column(String(1000))
     responsible_staff_name: Mapped[str] = mapped_column(String(150))
+    payment_method: Mapped[str | None] = mapped_column(String(20), nullable=True)
     status: Mapped[str] = mapped_column(String(40), index=True)
     customer: Mapped[Customer] = relationship(lazy="joined")
     items: Mapped[list["OrderItem"]] = relationship(cascade="all, delete-orphan", lazy="selectin", order_by="OrderItem.id")

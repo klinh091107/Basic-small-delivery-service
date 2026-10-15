@@ -11,18 +11,19 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from . import models, schemas
 from .auth import current_employee, require_app_request, router as auth_router
-from .config import STATUSES, STATUS_TRANSITIONS
-from .database import Base, engine, get_db
+from .config import STATUSES, STATUS_TRANSITIONS, PAYMENT_METHODS, MAX_ORDER_QUANTITY, STAFF_EXAMPLES
+from .database import engine, get_db
+from .setup_database import initialize_database
 from .services import create_order, get_or_404, update_order
 
 
 @asynccontextmanager
 async def lifespan(app):
-    Base.metadata.create_all(engine)
+    initialize_database(engine)
     yield
 
 
-app = FastAPI(title="Produce Desk API", version="1.0.0", lifespan=lifespan,
+app = FastAPI(title="FreshRoute Produce Delivery API", version="1.0.0", lifespan=lifespan,
               description="Local staff demo. All order statuses are entered manually.")
 
 
@@ -48,7 +49,9 @@ protected = APIRouter(dependencies=[Depends(current_employee), Depends(require_a
 
 @protected.get("/api/config")
 def configuration():
-    return {"statuses": STATUSES, "transitions": STATUS_TRANSITIONS}
+    return {"statuses": STATUSES, "transitions": STATUS_TRANSITIONS,
+            "payment_methods": PAYMENT_METHODS, "max_order_quantity": MAX_ORDER_QUANTITY,
+            "staff_examples": STAFF_EXAMPLES}
 
 
 @protected.get("/api/customers", response_model=list[schemas.CustomerOut])

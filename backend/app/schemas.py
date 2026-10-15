@@ -2,10 +2,23 @@ from datetime import date, datetime, timezone
 from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, StringConstraints, field_validator, model_validator
+from pydantic import AfterValidator
+
+from .config import PAYMENT_METHODS
+from .validation import normalize_phone, validate_total_quantity
 
 Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=150)]
 Address = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1000)]
-Phone = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=40)]
+Phone = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=40), AfterValidator(normalize_phone)]
+
+
+def valid_payment_method(value):
+    if value not in PAYMENT_METHODS:
+        raise ValueError("Choose a payment method: Cash, QR Banking, or Credit Card.")
+    return value
+
+
+PaymentMethod = Annotated[str, AfterValidator(valid_payment_method)]
 
 
 class InputModel(BaseModel):
@@ -46,7 +59,7 @@ class ItemValidation(InputModel):
     def unique_products(cls, items):
         if items is not None and len({item.product_id for item in items}) != len(items):
             raise ValueError("Duplicate product lines are not allowed. Combine their quantities into one line.")
-        return items
+        return validate_total_quantity(items) if items is not None else items
 
 
 class OrderCreate(ItemValidation):
@@ -55,6 +68,7 @@ class OrderCreate(ItemValidation):
     scheduled_delivery_date: date
     delivery_address: Address
     responsible_staff_name: Name
+    payment_method: PaymentMethod
     items: list[ItemInput] = Field(min_length=1)
 
     @model_validator(mode="after")
@@ -68,6 +82,7 @@ class OrderPatch(ItemValidation):
     scheduled_delivery_date: date | None = None
     delivery_address: Address | None = None
     responsible_staff_name: Name | None = None
+    payment_method: PaymentMethod | None = None
     status: Name | None = None
     items: list[ItemInput] | None = Field(default=None, min_length=1)
 
@@ -129,6 +144,7 @@ class OrderSummary(OutputModel):
     scheduled_delivery_date: date
     delivery_address: str
     responsible_staff_name: str
+    payment_method: str | None
     status: str
     created_at: datetime
     updated_at: datetime

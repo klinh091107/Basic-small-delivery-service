@@ -220,7 +220,7 @@ def test_customer_search_edit_email_and_order_list(client, order_payload):
     order = create(client, order_payload)
     customer_id = order['customer_id']
     assert len(client.get('/api/customers?search=customer').json()) == 1
-    assert len(client.get('/api/customers?search=123456789').json()) == 1
+    assert len(client.get('/api/customers?search=901234567').json()) == 1
     assert client.get('/api/customers?search=absent').json() == []
     assert client.get(f'/api/customers/{customer_id}/orders').json()[0]['id'] == order['id']
     assert client.patch(f'/api/customers/{customer_id}', json={'email': None}).json()['email'] is None

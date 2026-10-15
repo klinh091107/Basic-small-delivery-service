@@ -56,7 +56,7 @@ def client(anonymous_client, employee):
 def records(client, database):
     _, factory = database
     customer = client.post('/api/customers', json={
-        'full_name': 'Test Customer', 'phone': '+84 123456789',
+        'full_name': 'Test Customer', 'phone': '+84 90 123 4567',
         'email': 'test@example.com', 'address': 'Original address',
     }).json()
     with factory() as db:
@@ -74,6 +74,6 @@ def order_payload(records):
     return {
         'customer_id': customer['id'], 'received_date': '2026-10-15',
         'scheduled_delivery_date': '2026-10-16', 'delivery_address': customer['address'],
-        'responsible_staff_name': 'Alex',
+        'responsible_staff_name': 'Alex', 'payment_method': 'cash',
         'items': [{'product_id': products[0], 'quantity': 2.5}, {'product_id': products[1], 'quantity': 1}],
     }

@@ -1,8 +1,8 @@
-# Produce Desk
+# FreshRoute Produce Delivery
 
 An internal website for produce business staff to manage customers, create and edit orders, update order progress, and view scheduled deliveries. The interface is in English.
 
-**Key features:** employee-code and password login; customer management; orders with multiple produce items; order search and status filters; status history; and delivery schedules.
+**Key features:** employee-code and password login; customer management; orders with multiple produce items; order search and status filters; status history; and delivery schedules. Orders record Cash, QR Banking, or Credit Card as the payment method and allow a combined quantity of up to 50. Customer phone numbers use international country codes and are validated and stored in E.164 format. Payment processing and phone ownership verification are not included.
 
 **Tech stack:** React + Vite + CSS, FastAPI (Python), and SQLite + SQLAlchemy. Data is stored in a real database and remains available after restarting the application.
 
@@ -96,8 +96,9 @@ Start from the project root:
 cd backend
 ../.venv/bin/python -m pytest -q
 
-# Build the frontend
+# Test frontend validation and build
 cd ../frontend
+node --test src/validation.test.js
 npm run build
 
 # Preview the build at http://127.0.0.1:4173

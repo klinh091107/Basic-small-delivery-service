@@ -1303,3 +1303,92 @@ textarea {
     font-size: 11px;
   }
 }
+
+.quantity-summary {
+  padding: 10px 13px;
+  border-radius: 6px;
+  margin-bottom: 18px;
+  color: var(--green);
+  background: #edf3e9;
+  font-size: 13px;
+}
+.quantity-summary.over-limit {
+  color: #9b3e29;
+  background: #fff4f0;
+}
+.brand small {
+  letter-spacing: 1.1px;
+}
+@media (max-width: 700px) {
+  .app-footer {
+    gap: 16px;
+  }
+}
+
+/* FreshRoute: FooYes-inspired cream, coral and illustrated delivery styling. */
+:root { color: #30343b; background: #f8f8f8; --green: #b9403e; --muted: #686b73; --border: #e9e7e3; }
+.app-shell { display: block; }
+.sidebar { position: relative; inset: auto; width: 100%; padding: 18px max(28px, calc((100vw - 1180px) / 2)); flex-direction: row; align-items: center; gap: 35px; border: 0; background: #fbf5d9; }
+.brand { margin: 0 auto 0 0; font-size: 24px; color: #292d34; gap: 10px; flex-shrink: 0; }
+.brand-mark { background: #d95853; border-radius: 50% 50% 50% 12%; width: 42px; height: 42px; }
+.brand small, .login-brand small { color: #6f705f; font-size: 8px; letter-spacing: 2px; }
+.sidebar nav { display: flex; gap: 4px; }
+.sidebar nav a { color: #44434a; font-size: 13px; padding: 10px 14px; border-radius: 24px; }
+.sidebar nav a.active { background: #fff; color: #b9403e; box-shadow: 0 3px 12px #61482c09; }
+.sidebar nav a:hover { background: #ffffff95; }
+.staff-menu { position: relative; display: flex; align-items: center; gap: 12px; }
+.main-shell { margin-left: 0; }
+.workspace-banner { background: #fbf5d9; overflow: hidden; border-radius: 0 0 50% 3% / 0 0 12% 3%; }
+.banner-inner { max-width: 1180px; margin: auto; display: flex; align-items: center; justify-content: space-between; padding: 12px 0 27px; min-height: 240px; }
+.banner-copy h1 { font-size: clamp(30px, 3.2vw, 43px); letter-spacing: -1.5px; color: #292d34; margin: 7px 0 10px; }
+.banner-copy p { color: #66665f; font-size: 16px; }
+.eyebrow { color: #967049; font-weight: 700; font-size: 10px; letter-spacing: 2px; }
+.workspace-welcome { display: inline-block; margin-top: 22px; font-size: 12px; color: #6b6b61; }
+.produce-art { width: 390px; height: auto; flex-shrink: 0; }
+main { max-width: 1236px; padding: 36px 28px; }
+h1 { font-size: 29px; color: #30343b; }
+h2, h3 { color: #30343b; }
+.button { border-radius: 25px; padding-inline: 20px; }
+.primary { background: linear-gradient(110deg, #e77a49, #c94950); box-shadow: 0 4px 10px #b7433020; }
+.primary:hover { background: #b9403e; }
+.secondary { border-color: #e2dfd8; color: #55565d; }
+.secondary:hover { background: #fff5ef; }
+.card { border-radius: 12px; border-color: #eeece8; box-shadow: 0 6px 24px #3b2f2406; }
+.card-toolbar { padding: 24px; }
+input, select, textarea { border-color: #dddeda; color: #373b43; border-radius: 7px; min-height: 44px; }
+input::placeholder, textarea::placeholder { color: #83858b; }
+label, .customer-name { color: #41444c; }
+.field-help, .optional, .detail-label, .page-note, .subtle { color: #686b73; }
+.search-field input { background: #fafafa; height: 44px; }
+th { background: #f8f8f7; color: #73747b; }
+td { color: #62666e; border-color: #f0efed; }
+tbody tr:hover { background: #fffcf7; }
+.status-filters button { color: #686b73; }
+.status-filters button:hover { background: #fff8f2; }
+.active .filter-count { background: #fbe5df; }
+.status-0 { background: #f0eef8; color: #6b5793; }
+.status-1 { background: #fff2d7; color: #8b661c; }
+.status-2 { background: #e8f1fa; color: #3e6b91; }
+.status-3 { background: #fff0e4; color: #a25d2d; }
+.status-4 { background: #e7f2e9; color: #367247; }
+.empty-icon, .step-number { background: #fff0e6; color: #ba5941; }
+.empty-state { padding: 64px 24px; }
+.empty-state h3 { color: #343941; }
+.context-card { background: #fbf5e5; border-color: #f0e6ca; color: #77715e; border-radius: 12px; }
+.context-card h3, .context-icon { color: #7b643e; }
+.customer-preview, .segmented { background: #faf9f5; border-color: #ece8dd; }
+.customer-preview strong { color: #41444c; }
+.quantity-summary { background: #f7f2e5; color: #77613e; }
+.app-footer { max-width: 1236px; width: 100%; margin: auto; padding: 24px 28px; border-top: 1px solid var(--border); color: #777981; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline-color: #bd544a; }
+.login-page { background: #fbf5d9; }
+.login-brand { align-self: flex-start; max-width: 1040px; width: 100%; margin: 0 auto 45px; font-size: 27px; }
+.login-layout { display: grid; grid-template-columns: 1fr 420px; align-items: center; gap: 70px; max-width: 1040px; width: 100%; }
+.login-story h2 { font-size: 44px; letter-spacing: -1.5px; line-height: 1.2; margin: 18px 0; }
+.login-story p { color: #747064; font-size: 16px; line-height: 1.8; }
+.login-story .produce-art { max-width: 100%; margin-top: 12px; }
+.login-card { max-width: none; border: 0; padding: 38px; box-shadow: 0 16px 50px #65502612; }
+.login-footer { color: #777163; margin-top: 40px; }
+@media (max-width: 1250px) { .banner-inner { padding: 16px 28px 28px; } .sidebar { gap: 20px; } }
+@media (max-width: 960px) { .sidebar { flex-wrap: wrap; gap: 15px; } .sidebar nav { order: 3; width: 100%; justify-content: center; } .banner-copy p { max-width: 340px; font-size: 14px; } .produce-art { width: 300px; } .login-layout { gap: 30px; grid-template-columns: 1fr 390px; } .login-story h2 { font-size: 34px; } }
+@media (max-width: 700px) { .sidebar { padding: 18px 16px 8px; } .brand { font-size: 21px; } .sidebar nav { gap: 2px; justify-content: space-between; padding: 0; } .sidebar nav a { padding: 10px 8px; font-size: 11px; gap: 5px; } .banner-inner { padding: 24px 20px 30px; min-height: auto; } .banner-copy h1 { font-size: 32px; } .banner-copy p { font-size: 14px; } .workspace-banner .produce-art { display: none; } .workspace-welcome { margin-top: 16px; } main { padding: 28px 16px; } .page-heading h1 { font-size: 26px; } .app-footer { padding: 20px 16px; } .login-page { padding: 30px 20px; } .login-brand { margin-bottom: 30px; align-self: center; width: auto; } .login-layout { display: block; max-width: 440px; } .login-story { display: none; } .login-card { padding: 30px 25px; } }

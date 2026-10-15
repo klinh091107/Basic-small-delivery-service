@@ -53,8 +53,8 @@ The draft's searchable catalogue, status filters/counts, received date, manually
 1. Proposed status flow: **Received → Packed → Handed to Courier → In Transit → Delivered**. Staff may keep the current status or advance one step. Skipped/backward changes are rejected; Delivered is terminal. No status is a courier confirmation.
 2. Receipt date and the linked customer are fixed after creation. Scheduled delivery date, order-specific address, staff name, products, quantities, and status are editable, including on delivered orders for this demonstration.
 3. Staff sign in with an employee code and password. Responsible staff on an order remains a separate free-text field; status history does not yet attribute changes to the signed-in employee.
-4. Phone numbers are required free text to support local/international formats. Optional email is syntax-validated. Profiles are not automatically deduplicated by name/phone; product catalogue maintenance is outside the UI.
-5. Decimal quantities are allowed for kg, bunch, and box. No unit-specific rounding or maximum quantity has been agreed.
+4. Phone numbers require an explicit international +country code, are validated with libphonenumber metadata, and normalize to E.164 on create/update. This validates numbering format, not ownership. Optional email is syntax-validated. Profiles are not automatically deduplicated by name/phone; product catalogue maintenance is outside the UI.
+5. Decimal quantities are allowed for kg, bunch, and box. The combined quantity across every product line must not exceed 50; no unit-specific rounding is applied.
 6. Small local datasets are loaded without pagination. Editing uses last-save-wins for concurrently edited fields; conflict-resolution screens are outside this prototype. Database transactions and safe numbering protect writes, but this is not a multi-user production deployment.
 
 ### Questions for the client
@@ -68,7 +68,7 @@ The draft's searchable catalogue, status filters/counts, received date, manually
 
 ### Deliberately outside scope
 
-No product availability or inventory tracking; substitution preferences; recurring orders; delivery instructions; management summaries; payments; customer accounts; automated notifications. Evidence uploads, courier integrations, live shipment tracking, packing-time calculations, failed-delivery workflows, route optimisation, maps, and courier scheduling remain for future client discussion. Customer deletion is not implemented.
+No product availability or inventory tracking; substitution preferences; recurring orders; delivery instructions; management summaries; payment processing (Cash, QR Banking, and Credit Card preferences are recorded); customer accounts; automated notifications. Evidence uploads, courier integrations, live shipment tracking, packing-time calculations, failed-delivery workflows, route optimisation, maps, and courier scheduling remain for future client discussion. Customer deletion is not implemented.
 
 ## Short manual demo
 
@@ -78,7 +78,7 @@ First sign in with the demo account below.
 
 1. Open Orders and click **New Order**.
 2. Choose **New customer**. Enter a fictional name, phone, and address; leave email blank or enter a valid address. Click **Create Customer**.
-3. Confirm the order delivery address is prefilled. Enter the responsible staff name and a delivery date on/after the received date.
+3. Confirm the order delivery address is prefilled. Enter the responsible staff name, choose a payment method, and enter a delivery date on/after the received date.
 4. In **Product 1**, type/select **Carrots**, quantity **2.5**. Click **Add Item**, choose **Coriander**, quantity **2**.
 5. Click **Save Order**. Confirm the generated order number, Received status, initial history event, and success message. Return to Orders and search for the number/name; confirm the row and counts.
 

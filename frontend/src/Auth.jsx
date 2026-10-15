@@ -3,6 +3,8 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { api } from "./api";
 import { Icon, Loading, Notice } from "./components";
 
+import ProduceArt from "./ProduceArt";
+
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
 
@@ -101,7 +103,7 @@ export function LoginPage() {
       ? from
       : "/";
   useEffect(() => {
-    document.title = "Staff sign in · Produce Desk";
+    document.title = "Staff sign in · FreshRoute Produce Delivery";
   }, []);
   if (employee) return <Navigate to={destination} replace />;
   async function submit(event) {
@@ -126,9 +128,11 @@ export function LoginPage() {
           <Icon name="leaf" size={26} />
         </span>
         <span>
-          Produce Desk<small>ORDER MANAGEMENT</small>
+          FreshRoute<small>PRODUCE DELIVERY</small>
         </span>
       </div>
+      <div className="login-layout">
+        <div className="login-story"><span className="eyebrow">FROM FRESH PICKS TO FRONT DOORS</span><h2>Fresh orders.<br />Thoughtful deliveries.</h2><p>Fruit, vegetables and produce boxes.<br />For households and businesses.</p><ProduceArt /></div>
       <section className="login-card" aria-labelledby="login-title">
         <div className="eyebrow">STAFF WORKSPACE</div>
         <h1 id="login-title">Welcome back</h1>
@@ -188,7 +192,10 @@ export function LoginPage() {
           Need access? Contact your workspace administrator.
         </p>
       </section>
-      <p className="login-footer">Internal staff access · Produce Desk</p>
+      </div>
+      <p className="login-footer">
+        Internal staff access · FreshRoute Produce Delivery
+      </p>
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { api, useApi, useDebounce } from "./api";
+import { normalizePhone } from "./validation";
 import {
   Empty,
   Icon,
@@ -41,11 +42,12 @@ export function CustomerForm({
     setSaving(true);
     setError("");
     try {
+      const phone = normalizePhone(values.phone);
       const saved = await api(
         customer ? `/customers/${customer.id}` : "/customers",
         {
           method: customer ? "PATCH" : "POST",
-          body: { ...values, email: values.email.trim() || null },
+          body: { ...values, phone, email: values.email.trim() || null },
         },
       );
       onSaved(saved);
@@ -86,7 +88,12 @@ export function CustomerForm({
               type="tel"
               autoComplete="tel"
               placeholder="e.g. +84 90 123 4567"
+              aria-describedby={`${prefix}-phone-help`}
             />
+            <span id={`${prefix}-phone-help`} className="field-help">
+              Include + and the country code. International mobile and landline
+              numbers are supported.
+            </span>
           </div>
           <div className="field">
             <label htmlFor={`${prefix}-email`}>
