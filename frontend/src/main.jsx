@@ -11,7 +11,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/*" element={<RequireLogin><App /></RequireLogin>} />
+          <Route
+            path="/*"
+            element={
+              <RequireLogin>
+                <App />
+              </RequireLogin>
+            }
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

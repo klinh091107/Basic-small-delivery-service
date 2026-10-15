@@ -45,3 +45,13 @@ This is a functional manual accessibility check, not a formal WCAG audit. Safari
 Browser testing intentionally left fictional records for inspection: `Demo QA Customer`, `Demo Workflow Customer`, and `ORD-000011`. The current local database therefore has 7 customers, 10 products, and 11 orders. A fresh database seeded using the README starts with the original 5 customers and 10 orders. No real customer data was used.
 
 No remote deployment was performed. The temporary development/preview servers were stopped after verification. This deliverable is the requested local Python/SQLite demonstration; run commands and limitations are in the README.
+
+
+## Staff login update
+
+- After adding employee-code/password authentication, the backend suite passed **70 tests** (the original 47 business tests plus 23 authentication cases).
+- `npm run build` passed with the sign-in page and protected navigation.
+- The browser displayed `/login` with labelled employee-code/password fields, a password visibility control, and the Sign In button.
+- Automated tests verified access denial for unauthenticated reads/writes, valid and invalid login, code normalization, salted password hashes, HttpOnly/SameSite cookies, hashed session storage, expiry, forged tokens, token rotation, logout revocation, required request headers, login rate limiting, and idempotent account seeding.
+- Added demo employee `NV001`; existing customer/order data was preserved. The local frontend/backend were restarted and left running for the user's demo.
+- The previous business walkthrough remains historical evidence; the new sign-in submission/logout were verified through API tests, not a completed browser walkthrough.

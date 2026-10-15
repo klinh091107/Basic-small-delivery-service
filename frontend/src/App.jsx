@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  NavLink,
-  Route,
-  Routes,
-  useLocation,
-} from "react-router-dom";
+import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import { useApi } from "./api";
 import { ConfigContext, Icon, Loading, Notice } from "./components";
 import {
@@ -71,7 +65,8 @@ export default function App() {
         <div className="sidebar-footer">
           <span className="workspace-dot" />
           <div>
-            {employee.full_name}<small>{employee.employee_code} · Staff workspace</small>
+            {employee.full_name}
+            <small>{employee.employee_code} · Staff workspace</small>
           </div>
         </div>
       </aside>
@@ -128,4 +123,3 @@ export default function App() {
     </div>
   );
 }
-

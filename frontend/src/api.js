@@ -6,7 +6,11 @@ export async function api(path, options = {}) {
     response = await fetch(`/api${path}`, {
       ...options,
       credentials: "same-origin",
-      headers: { "Content-Type": "application/json", "X-Requested-With": "ProduceDesk", ...options.headers },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Requested-With": "ProduceDesk",
+        ...options.headers,
+      },
       body:
         options.body === undefined ? undefined : JSON.stringify(options.body),
     });

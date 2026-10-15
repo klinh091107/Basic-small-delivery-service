@@ -4,7 +4,8 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base, get_db, make_engine
 from app.main import app
-from app.models import Product
+from app.models import Employee, Product
+from app.auth import failed_logins, hash_password
 
 
 @pytest.fixture
@@ -17,7 +18,7 @@ def database(tmp_path):
 
 
 @pytest.fixture
-def client(database):
+def anonymous_client(database):
     _, factory = database
 
     def override_db():
@@ -26,10 +27,29 @@ def client(database):
 
     app.dependency_overrides[get_db] = override_db
     # Tables for this fixture are initialized above; no production lifespan.
-    client = TestClient(app)
+    failed_logins.clear()
+    client = TestClient(app, headers={"X-Requested-With": "ProduceDesk"})
     yield client
     client.close()
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def employee(database):
+    with database[1]() as db:
+        employee = Employee(employee_code="TEST001", full_name="Test Staff",
+                            password_hash=hash_password("TestPassword123!"))
+        db.add(employee)
+        db.commit()
+        return employee.id
+
+
+@pytest.fixture
+def client(anonymous_client, employee):
+    response = anonymous_client.post("/api/auth/login", json={
+        "employee_code": "TEST001", "password": "TestPassword123!"})
+    assert response.status_code == 200
+    return anonymous_client
 
 
 @pytest.fixture
