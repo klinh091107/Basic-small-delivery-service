@@ -1,3 +1,4 @@
+import BrandMark from "./BrandMark";
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import { useApi } from "./api";
@@ -13,7 +14,6 @@ import {
   OrderDetailPage,
   OrdersPage,
 } from "./Orders";
-import ProduceArt from "./ProduceArt";
 import { StaffMenu, useAuth } from "./Auth";
 
 export default function App() {
@@ -37,9 +37,7 @@ export default function App() {
       </a>
       <aside className="sidebar">
         <Link to="/" className="brand">
-          <span className="brand-mark">
-            <Icon name="leaf" size={25} />
-          </span>
+          <BrandMark />
           <span>
             FreshRoute<small>PRODUCE DELIVERY</small>
           </span>
@@ -69,12 +67,11 @@ export default function App() {
         <header className="workspace-banner">
           <div className="banner-inner">
             <div className="banner-copy">
-              <span className="eyebrow">FRESHROUTE ORDER MANAGEMENT</span>
-              <h1>Every order. One workspace.</h1>
+              <h1>Order management</h1>
               <p>Manage orders from multiple channels, organise deliveries, and keep track of every update.</p>
               <span className="workspace-welcome">Welcome, {employee.full_name}</span>
             </div>
-            <ProduceArt />
+            <img className="produce-art workspace-image" src="/illustrations/order-workspace-cutout.png" alt="" />
           </div>
         </header>
         <main id="main-content" tabIndex={-1}>

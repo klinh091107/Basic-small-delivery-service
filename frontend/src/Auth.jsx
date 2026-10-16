@@ -1,3 +1,4 @@
+import BrandMark from "./BrandMark";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { api } from "./api";
@@ -124,9 +125,7 @@ export function LoginPage() {
     <main className="login-page">
       <div className="login-brand">
         <div className="login-brand-anchor">
-        <span className="brand-mark">
-          <Icon name="leaf" size={26} />
-        </span>
+        <BrandMark />
         <span>
           FreshRoute<small>PRODUCE DELIVERY</small>
         </span>

@@ -1461,3 +1461,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   position: relative;
   top: -50px;
 }
+
+.workspace-image { max-height: 240px; object-fit: contain; border-radius: 16px; }
+
+/* Blend the workspace photograph into a continuous warm beige header. */
+.app-shell > .sidebar,
+.workspace-banner { background: #fffdf4; }
+.workspace-banner .banner-inner { gap: 32px; }
+.workspace-banner .banner-copy { flex: 1; min-width: 0; }
+.workspace-banner .banner-copy p { max-width: 640px; color: #554c3e; }
+.workspace-banner .workspace-welcome { color: #554c3e; }
+.workspace-image { border-radius: 0; }
+
+
+.freshroute-mark { width: 44px; height: 44px; flex-shrink: 0; }
+.login-brand .freshroute-mark { width: 48px; height: 48px; }
+@media (max-width: 700px) { .brand .freshroute-mark { width: 38px; height: 38px; } }
