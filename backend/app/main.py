@@ -86,6 +86,16 @@ def edit_customer(customer_id: int, payload: schemas.CustomerPatch, db: Session 
     return customer
 
 
+@protected.delete("/api/customers/{customer_id}")
+def remove_customer(customer_id: int, db: Session = Depends(get_db)):
+    customer = get_or_404(db, models.Customer, customer_id)
+    if db.scalar(select(func.count(models.Order.id)).where(models.Order.customer_id == customer_id)):
+        raise HTTPException(409, "This customer still has orders. Delete those orders first.")
+    db.delete(customer)
+    db.commit()
+    return {"deleted": True}
+
+
 @protected.get("/api/customers/{customer_id}/orders", response_model=list[schemas.OrderSummary])
 def customer_orders(customer_id: int, db: Session = Depends(get_db)):
     get_or_404(db, models.Customer, customer_id)
@@ -148,6 +158,14 @@ def edit_order(order_id: int, payload: schemas.OrderPatch, db: Session = Depends
     db.commit()
     db.refresh(order)
     return order
+
+
+@protected.delete("/api/orders/{order_id}")
+def remove_order(order_id: int, db: Session = Depends(get_db)):
+    order = get_or_404(db, models.Order, order_id)
+    db.delete(order)
+    db.commit()
+    return {"deleted": True}
 
 
 @protected.get("/api/deliveries", response_model=list[schemas.OrderSummary])

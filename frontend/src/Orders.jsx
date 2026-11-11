@@ -572,6 +572,8 @@ export function NewOrderPage() {
 export function OrderDetailPage() {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [deleteError, setDeleteError] = useState("");
   const [refresh, setRefresh] = useState(0);
   const result = useApi(`/orders/${id}`, refresh);
   const [message, setMessage] = useState(location.state?.message || "");
@@ -593,7 +595,24 @@ export function OrderDetailPage() {
         description={`Received ${formatDate(order.received_date)} · Edit the order and record its progress.`}
       >
         <Status value={order.status} />
+        <button
+          type="button"
+          className="button secondary"
+          onClick={async () => {
+            if (!window.confirm(`Delete order ${order.order_number}? This cannot be undone.`)) return;
+            try {
+              await api(`/orders/${order.id}`, { method: "DELETE" });
+              navigate("/", { state: { message: `Order ${order.order_number} deleted.` } });
+            } catch (err) {
+              setMessage("");
+              setDeleteError(err.message);
+            }
+          }}
+        >
+          Delete Order
+        </button>
       </PageHeader>
+      <Notice error={deleteError} />
       <Notice success={message} />
       <div className="editor-layout">
         <div>

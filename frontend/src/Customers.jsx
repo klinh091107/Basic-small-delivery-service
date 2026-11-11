@@ -391,6 +391,8 @@ export function CustomerDetailPage() {
   const customer = useApi(`/customers/${id}`, refresh);
   const orders = useApi(`/customers/${id}/orders`, refresh);
   const location = useLocation();
+  const navigate = useNavigate();
+  const [deleteError, setDeleteError] = useState("");
   const [editing, setEditing] = useState(false);
   const [message, setMessage] = useState(location.state?.message || "");
   useEffect(() => {
@@ -416,7 +418,23 @@ export function CustomerDetailPage() {
         >
           {editing ? "Close editor" : "Edit Customer"}
         </button>
+        <button
+          type="button"
+          className="button secondary"
+          onClick={async () => {
+            if (!window.confirm(`Delete ${customer.data.full_name}? This cannot be undone.`)) return;
+            try {
+              await api(`/customers/${id}`, { method: "DELETE" });
+              navigate("/customers");
+            } catch (err) {
+              setDeleteError(err.message);
+            }
+          }}
+        >
+          Delete Customer
+        </button>
       </PageHeader>
+      <Notice error={deleteError} />
       <Notice success={message} />
       {editing ? (
         <div className="narrow">

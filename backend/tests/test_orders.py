@@ -226,7 +226,7 @@ def test_customer_search_edit_email_and_order_list(client, order_payload):
     assert client.patch(f'/api/customers/{customer_id}', json={'email': None}).json()['email'] is None
     assert client.patch(f'/api/customers/{customer_id}', json={'email': 'not-email'}).status_code == 422
     assert client.patch(f'/api/customers/{customer_id}', json={'address': None}).status_code == 422
-    assert client.delete(f'/api/customers/{customer_id}').status_code == 405
+    assert client.delete(f'/api/customers/{customer_id}').status_code == 409
 
 
 def test_products_search_and_category(client, records):
@@ -270,3 +270,22 @@ def test_config_is_central_status_source(client):
     assert result['statuses'] == list(STATUSES)
     assert result['transitions']['Received'] == ['Received', 'Packed']
     assert result['transitions']['Delivered'] == ['Delivered']
+
+
+def test_delete_order_removes_items_and_history(client, order_payload, database):
+    order = create(client, order_payload)
+    assert client.delete(f"/api/orders/{order['id']}").status_code == 200
+    assert client.get(f"/api/orders/{order['id']}").status_code == 404
+    with database[1]() as db:
+        assert db.scalar(select(func.count(OrderItem.id))) == 0
+        assert db.scalar(select(func.count(OrderStatusHistory.id))) == 0
+    assert client.delete(f"/api/orders/{order['id']}").status_code == 404
+
+
+def test_delete_customer_blocked_while_orders_exist(client, order_payload, records):
+    customer = records[0]
+    order = create(client, order_payload)
+    assert client.delete(f"/api/customers/{customer['id']}").status_code == 409
+    client.delete(f"/api/orders/{order['id']}")
+    assert client.delete(f"/api/customers/{customer['id']}").status_code == 200
+    assert client.get(f"/api/customers/{customer['id']}").status_code == 404
