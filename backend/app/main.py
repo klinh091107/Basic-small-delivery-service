@@ -27,6 +27,14 @@ app = FastAPI(title="FreshRoute Produce Delivery API", version="1.0.0", lifespan
               description="Local staff demo. All order statuses are entered manually.")
 
 
+@app.middleware("http")
+async def prevent_api_caching(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "private, no-store"
+    return response
+
+
 @app.exception_handler(StarletteHTTPException)
 async def http_error(request: Request, exc):
     return JSONResponse(status_code=exc.status_code, content={"error": {"message": str(exc.detail), "details": []}})

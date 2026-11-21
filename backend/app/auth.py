@@ -16,7 +16,8 @@ from sqlalchemy.orm import Session
 from .database import get_db
 from .models import Employee, StaffSession, utc_now
 
-COOKIE_NAME = "produce_session"
+# Firebase Hosting forwards only this cookie to Cloud Run.
+COOKIE_NAME = "__session"
 SESSION_SECONDS = 8 * 60 * 60
 PASSWORD_ITERATIONS = 600_000
 # A small single-process login limiter for this local demo.

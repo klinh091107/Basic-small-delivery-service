@@ -86,3 +86,8 @@ class OrderStatusHistory(Base):
     previous_status: Mapped[str | None] = mapped_column(String(40), nullable=True)
     new_status: Mapped[str] = mapped_column(String(40))
     changed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+
+class SeedState(Base):
+    __tablename__ = "seed_state"
+    name: Mapped[str] = mapped_column(String(50), primary_key=True)

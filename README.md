@@ -106,3 +106,7 @@ npm run preview
 ```
 
 The backend on port `8000` must remain running when using the build preview. Test results are documented in [VERIFICATION.md](VERIFICATION.md).
+
+## 6. Deploy to Firebase
+
+See [FIREBASE_DEPLOY.md](FIREBASE_DEPLOY.md) for Firebase Hosting + Cloud Run + PostgreSQL setup and deployment commands. Hosting serves the Vite build; it cannot run the Python backend by itself.

@@ -36,6 +36,7 @@ def test_login_cookie_and_database_session(anonymous_client, employee, database)
     assert response.json() == {"id": employee, "employee_code": "TEST001", "full_name": "Test Staff"}
     cookie = response.headers["set-cookie"]
     assert "HttpOnly" in cookie and "SameSite=strict" in cookie and "Path=/api" in cookie
+    assert cookie.startswith("__session=")
     assert "Max-Age=28800" in cookie
     token = anonymous_client.cookies.get(COOKIE_NAME)
     with database[1]() as db:
@@ -122,3 +123,17 @@ def test_password_salts_and_whitespace():
     assert first != second
     assert verify_password(" password ", first)
     assert not verify_password("password", first)
+
+
+def test_api_responses_are_not_cached(client, anonymous_client):
+    assert client.get("/api/orders").headers["cache-control"] == "private, no-store"
+    client.post("/api/auth/logout")
+    denied = client.get("/api/orders")
+    assert denied.status_code == 401
+    assert denied.headers["cache-control"] == "private, no-store"
+
+
+def test_cloud_cookie_is_secure(anonymous_client, employee, monkeypatch):
+    monkeypatch.setenv("COOKIE_SECURE", "true")
+    response = sign_in(anonymous_client)
+    assert "Secure" in response.headers["set-cookie"]

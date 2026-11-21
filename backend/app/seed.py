@@ -1,4 +1,5 @@
 """Run with `python -m app.seed` from backend/. Existing records are never reset."""
+import os
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -7,7 +8,7 @@ from sqlalchemy import select
 from .auth import hash_password
 from .config import STATUSES, STAFF_EXAMPLES, PAYMENT_METHODS
 from .database import Base, SessionLocal, engine
-from .models import Customer, Employee, Order, Product
+from .models import Customer, Employee, Order, Product, SeedState
 from .schemas import OrderCreate, OrderPatch
 from .services import create_order, update_order
 from .setup_database import initialize_database
@@ -33,8 +34,11 @@ def seed(db, today=None):
     # Add demo login even when the business dataset was seeded before auth existed.
     # Never reset an existing account's password when seeding again.
     if not db.scalar(select(Employee).where(Employee.employee_code == "NV001")):
+        password = os.getenv("SEED_PASSWORD", "Produce@123")
+        if (os.getenv("K_SERVICE") or os.getenv("CLOUD_RUN_JOB")) and password == "Produce@123":
+            raise RuntimeError("Set SEED_PASSWORD before creating a cloud demo account.")
         db.add(Employee(employee_code="NV001", full_name=STAFF_EXAMPLES[0],
-                        password_hash=hash_password("Produce@123")))
+                        password_hash=hash_password(password)))
         db.commit()
     employee = db.scalar(select(Employee).where(Employee.employee_code == "NV001"))
     if employee and employee.full_name == "Demo Staff":
@@ -45,9 +49,13 @@ def seed(db, today=None):
         if old:
             old.responsible_staff_name = STAFF_EXAMPLES[index % len(STAFF_EXAMPLES)]
     db.commit()
-    # SQLite's persistent user_version is our demo-seed marker. No migration
-    # framework is used in this MVP. It survives edits to all seeded records.
-    if db.connection().exec_driver_sql("PRAGMA user_version").scalar() >= 1:
+    # Preserve the old SQLite marker and use a portable marker for new databases.
+    if db.get(SeedState, "demo_v1"):
+        return
+    is_sqlite = db.get_bind().dialect.name == "sqlite"
+    if is_sqlite and db.connection().exec_driver_sql("PRAGMA user_version").scalar() >= 1:
+        db.add(SeedState(name="demo_v1"))
+        db.commit()
         return
     today = today or datetime.now(ZoneInfo("Asia/Ho_Chi_Minh")).date()
     customers, products = [], []
@@ -81,7 +89,9 @@ def seed(db, today=None):
         ))
         for status in STATUSES[1:index % len(STATUSES) + 1]:
             update_order(db, order, OrderPatch(status=status))
-    db.connection().exec_driver_sql("PRAGMA user_version = 1")
+    db.add(SeedState(name="demo_v1"))
+    if is_sqlite:
+        db.connection().exec_driver_sql("PRAGMA user_version = 1")
     db.commit()
 
 
