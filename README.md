@@ -1,10 +1,6 @@
 # FreshRoute Produce Delivery
 
-An internal website for produce business staff to manage customers, create and edit orders, update order progress, and view scheduled deliveries. The interface is in English.
-
-**Key features:** employee-code and password login; customer management; orders with multiple produce items; order search and status filters; status history; and delivery schedules. Orders record Cash, QR Banking, or Credit Card as the payment method and allow a combined quantity of up to 50. Customer phone numbers use international country codes and are validated and stored in E.164 format. Payment processing and phone ownership verification are not included.
-
-**Tech stack:** React + Vite + CSS, FastAPI (Python), and SQLite + SQLAlchemy. Data is stored in a real database and remains available after restarting the application.
+An website for produce business staff to manage customers, create and edit orders, update order progress, and view scheduled deliveries. The interface is in English.
 
 ## 1. Prerequisites
 
@@ -38,7 +34,6 @@ python -m pip install -r backend/requirements-lock.txt
 
 # Create the database, sample data, and demo account
 cd backend
-python -m app.seed
 
 # Start the API server
 python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
@@ -65,26 +60,6 @@ Keep both terminals running, then open **http://127.0.0.1:5173**.
 
 Sign in, then use **New Order** to create an order, **Orders** to view/edit orders and update their status, and **Deliveries** to view the delivery schedule. Use **Sign Out** to log out.
 
-API documentation: **http://127.0.0.1:8000/docs**. The frontend automatically forwards `/api` requests to the backend on port `8000`.
-
-## 4. Run Again After Setup
-
-You do not need to reinstall dependencies or seed the database each time. Open two terminals in the project root:
-
-**Terminal 1 — backend:**
-
-```bash
-cd backend
-../.venv/bin/python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-```
-
-**Terminal 2 — frontend:**
-
-```bash
-cd frontend
-npm run dev
-```
-
 Press `Ctrl+C` in each terminal to stop the servers. Saved data remains in the SQLite file.
 
 ## 5. Tests and Build
@@ -105,8 +80,3 @@ npm run build
 npm run preview
 ```
 
-The backend on port `8000` must remain running when using the build preview. Test results are documented in [VERIFICATION.md](VERIFICATION.md).
-
-## 6. Deploy to Firebase
-
-See [FIREBASE_DEPLOY.md](FIREBASE_DEPLOY.md) for Firebase Hosting + Cloud Run + PostgreSQL setup and deployment commands. Hosting serves the Vite build; it cannot run the Python backend by itself.

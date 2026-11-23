@@ -1,2 +1,0 @@
--r requirements-lock.txt
-psycopg[binary]>=3.2,<4
