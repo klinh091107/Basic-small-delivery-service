@@ -85,11 +85,16 @@ def test_status_sequence_and_history(client, order_payload):
         assert history[-1]['changed_at'].endswith('Z')
         # Saving the same status must not append another event.
         assert len(client.patch(path, json={'status': status}).json()['status_history']) == index + 1
-    assert client.patch(path, json={'status': 'Received'}).status_code == 422
+    # Staff can correct a mistake by moving the status back or jumping ahead.
+    back = client.patch(path, json={'status': 'Received'})
+    assert back.status_code == 200
+    assert back.json()['status_history'][-1]['previous_status'] == 'Delivered'
+    assert client.patch(path, json={'status': 'In Transit'}).json()['status'] == 'In Transit'
+    assert client.patch(path, json={'status': 'Cancelled'}).status_code == 422
 
 
-@pytest.mark.parametrize('status', ['Delivered', 'In Transit', 'Handed to Courier', 'Unknown'])
-def test_skip_and_invalid_status_rejected(client, order_payload, status):
+@pytest.mark.parametrize('status', ['Unknown', 'Cancelled'])
+def test_invalid_status_rejected(client, order_payload, status):
     order = create(client, order_payload)
     path = f"/api/orders/{order['id']}"
     response = client.patch(path, json={'status': status, 'responsible_staff_name': 'Should not save'})
@@ -268,8 +273,9 @@ def test_concurrent_creation_uses_unique_database_ids(client, order_payload):
 def test_config_is_central_status_source(client):
     result = client.get('/api/config').json()
     assert result['statuses'] == list(STATUSES)
-    assert result['transitions']['Received'] == ['Received', 'Packed']
-    assert result['transitions']['Delivered'] == ['Delivered']
+    assert result['transitions']['Received'] == list(WORKFLOW)
+    assert result['transitions']['Delivered'] == list(WORKFLOW)
+    assert result['transitions']['Cancelled'] == ['Cancelled']
 
 
 def test_delete_order_removes_items_and_history(client, order_payload, database):

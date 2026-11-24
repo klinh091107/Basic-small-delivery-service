@@ -89,7 +89,7 @@ def update_order(db, order, payload):
     if status not in STATUSES:
         raise HTTPException(422, "Status must be one of: " + ", ".join(STATUSES) + ".")
     if status not in STATUS_TRANSITIONS[order.status]:
-        raise HTTPException(422, f"Cannot change status from {order.status} to {status}. Keep the current status or advance to the next status.")
+        raise HTTPException(422, f"Cannot change status from {order.status} to {status}.")
     if "items" in changes:
         validate_products(db, payload.items)
         if order.inventory_deducted:

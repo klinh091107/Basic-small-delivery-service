@@ -337,7 +337,7 @@ function OrderEditor({ order, template, customer, onSaved }) {
         "Duplicate product lines are not allowed. Combine their quantities into one line.",
       );
     if (order && !transitions[order.status].includes(values.status))
-      return setError("Keep the current status or advance to the next status.");
+      return setError("Choose a valid order status.");
     setSaving(true);
     const body = {
       scheduled_delivery_date: values.scheduled_delivery_date,
@@ -498,7 +498,7 @@ function OrderEditor({ order, template, customer, onSaved }) {
             <div className="section-heading">
               <div>
                 <h2>Order status</h2>
-                <p>Record progress manually as the order moves forward.</p>
+                <p>Set the order status manually. You can move it forward or back to fix a mistake.</p>
               </div>
             </div>
             <div className="field">
@@ -509,7 +509,7 @@ function OrderEditor({ order, template, customer, onSaved }) {
                 ))}
               </select>
               <span className="field-help">
-                Keep the current status or advance one step. These updates are
+                Use Cancel Order to cancel. These updates are
                 staff records, not courier confirmations.
               </span>
             </div>

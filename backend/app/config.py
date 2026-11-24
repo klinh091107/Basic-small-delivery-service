@@ -6,10 +6,8 @@ WORKFLOW = STATUSES
 STATUSES = WORKFLOW + (CANCELLED,)
 # Cancelled is never reachable through a plain status edit; it has its own endpoint
 # so stock is restored exactly once.
-STATUS_TRANSITIONS = {
-    status: list(WORKFLOW[index:index + 2])
-    for index, status in enumerate(WORKFLOW)
-}
+# Staff may set any workflow status (forward or back) to correct mistakes.
+STATUS_TRANSITIONS = {status: list(WORKFLOW) for status in WORKFLOW}
 STATUS_TRANSITIONS[CANCELLED] = [CANCELLED]
 # Orders can only be cancelled before they leave the warehouse.
 CANCELLABLE = ("Received", "Packed")
