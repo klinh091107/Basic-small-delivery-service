@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import select
 
 from .auth import hash_password
-from .config import STATUSES, STAFF_EXAMPLES, PAYMENT_METHODS
+from .config import WORKFLOW as STATUSES, STAFF_EXAMPLES, PAYMENT_METHODS
 from .database import Base, SessionLocal, engine
 from .models import Customer, Employee, Order, Product, SeedState
 from .schemas import OrderCreate, OrderPatch
@@ -70,7 +70,7 @@ def seed(db, today=None):
     for name, category, unit in PRODUCTS:
         product = db.scalar(select(Product).where(Product.name == name, Product.unit == unit))
         if product is None:
-            product = Product(name=name, category=category, unit=unit)
+            product = Product(name=name, category=category, unit=unit, stock_quantity=100)
             db.add(product)
             db.flush()
         products.append(product)

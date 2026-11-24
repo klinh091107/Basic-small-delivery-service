@@ -6,7 +6,7 @@ import pytest
 from sqlalchemy import event, func, select, text
 from sqlalchemy.exc import IntegrityError
 
-from app.config import STATUSES
+from app.config import STATUSES, WORKFLOW
 from app.database import Base, make_engine
 from app.models import Customer, Order, OrderItem, OrderStatusHistory, Product
 from app.seed import seed
@@ -74,14 +74,14 @@ def test_customer_address_change_does_not_change_order_address(client, order_pay
 def test_status_sequence_and_history(client, order_payload):
     order = create(client, order_payload)
     path = f"/api/orders/{order['id']}"
-    for index, status in enumerate(STATUSES):
+    for index, status in enumerate(WORKFLOW):
         response = client.patch(path, json={'status': status})
         assert response.status_code == 200, response.text
         history = response.json()['status_history']
         assert len(history) == index + 1
         assert history[-1]['new_status'] == status
         if index:
-            assert history[-1]['previous_status'] == STATUSES[index - 1]
+            assert history[-1]['previous_status'] == WORKFLOW[index - 1]
         assert history[-1]['changed_at'].endswith('Z')
         # Saving the same status must not append another event.
         assert len(client.patch(path, json={'status': status}).json()['status_history']) == index + 1
@@ -191,7 +191,7 @@ def test_deliveries_inclusive_range_and_delivered_orders(client, order_payload):
     later = create(client, {**order_payload, 'scheduled_delivery_date': '2026-10-18'})
     early = create(client, {**order_payload, 'scheduled_delivery_date': '2026-10-16'})
     same_day = create(client, {**order_payload, 'scheduled_delivery_date': '2026-10-16'})
-    for status in STATUSES[1:]:
+    for status in WORKFLOW[1:]:
         client.patch(f"/api/orders/{early['id']}", json={'status': status})
     rows = client.get('/api/deliveries?date_from=2026-10-16').json()
     assert [row['id'] for row in rows] == [early['id'], same_day['id']]
@@ -254,7 +254,7 @@ def test_seed_idempotent_even_after_edit(database):
         assert db.scalar(select(func.count(Customer.id))) == 5
         assert db.scalar(select(func.count(Product.id))) == 10
         assert db.scalar(select(func.count(Order.id))) == 10
-        assert set(db.scalars(select(Order.status))) == set(STATUSES)
+        assert set(db.scalars(select(Order.status))) == set(WORKFLOW)
         dates = set(db.scalars(select(Order.scheduled_delivery_date)))
         assert dates == {date(2026, 10, 15), date(2026, 10, 16), date(2026, 10, 19)}
 

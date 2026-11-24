@@ -20,6 +20,12 @@ export function Icon({ name, size = 20 }) {
       </>
     ),
     plus: <path d="M12 5v14M5 12h14" />,
+    inventory: (
+      <>
+        <path d="M3 8 12 3l9 5v9l-9 4-9-4V8Z" />
+        <path d="m3 8 9 5 9-5M12 13v8" />
+      </>
+    ),
     customers: (
       <>
         <circle cx="9" cy="8" r="3" />
@@ -217,14 +223,25 @@ export function OrdersTable({ orders, delivery = false }) {
                 <Status value={order.status} />
               </td>
               <td>
-                <Link
-                  className="table-action"
-                  aria-label={`${delivery ? "Open" : "View / Edit"} ${order.order_number}`}
-                  to={`/orders/${order.id}`}
-                >
-                  {delivery ? "Open" : "View / Edit"}
-                  <Icon name="arrow" size={14} />
-                </Link>
+                <div className="table-actions">
+                  <Link
+                    className="table-action"
+                    aria-label={`${delivery ? "Open" : "View / Edit"} ${order.order_number}`}
+                    to={`/orders/${order.id}`}
+                  >
+                    {delivery ? "Open" : "View / Edit"}
+                    <Icon name="arrow" size={14} />
+                  </Link>
+                  {!delivery && (
+                    <Link
+                      className="table-action reorder-action"
+                      aria-label={`Reorder ${order.order_number}`}
+                      to={`/orders/new?reorder=${order.id}`}
+                    >
+                      Reorder
+                    </Link>
+                  )}
+                </div>
               </td>
             </tr>
           ))}

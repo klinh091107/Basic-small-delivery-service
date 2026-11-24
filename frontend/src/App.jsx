@@ -14,6 +14,7 @@ import {
   OrderDetailPage,
   OrdersPage,
 } from "./Orders";
+import { InventoryPage } from "./Inventory";
 import { StaffMenu, useAuth } from "./Auth";
 
 export default function App() {
@@ -25,7 +26,9 @@ export default function App() {
     ? "Customers"
     : location.pathname === "/deliveries"
       ? "Deliveries"
-      : "Orders";
+      : location.pathname === "/inventory"
+        ? "Inventory Management"
+        : "Orders";
   useEffect(() => {
     window.scrollTo(0, 0);
     document.title = `${section} · FreshRoute Produce Delivery`;
@@ -59,6 +62,10 @@ export default function App() {
           <NavLink to="/deliveries">
             <Icon name="deliveries" />
             Deliveries
+          </NavLink>
+          <NavLink to="/inventory">
+            <Icon name="inventory" />
+            Inventory Management
           </NavLink>
         </nav>
         <StaffMenu />
@@ -97,6 +104,7 @@ export default function App() {
                 <Route path="/customers/new" element={<NewCustomerPage />} />
                 <Route path="/customers/:id" element={<CustomerDetailPage />} />
                 <Route path="/deliveries" element={<DeliveriesPage />} />
+                <Route path="/inventory" element={<InventoryPage />} />
                 <Route
                   path="*"
                   element={

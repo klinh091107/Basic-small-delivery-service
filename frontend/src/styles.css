@@ -1477,3 +1477,28 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .freshroute-mark { width: 44px; height: 44px; flex-shrink: 0; }
 .login-brand .freshroute-mark { width: 48px; height: 48px; }
 @media (max-width: 700px) { .brand .freshroute-mark { width: 38px; height: 38px; } }
+
+/* Cancelled status, reorder action, dialogs, inventory */
+.status-5 { background: #fbe9e7; color: #b23b32; }
+.table-actions { display: flex; align-items: center; gap: 16px; }
+.reorder-action { color: var(--green); }
+.stock-warning { margin: 10px 0 0; }
+.cancelled-items { margin: 8px 0 0; padding-left: 18px; color: #62666e; }
+.cancelled-summary { border-left: 3px solid #b23b32; }
+.confirm-dialog { border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: min(460px, calc(100vw - 32px)); box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+.confirm-dialog::backdrop { background: rgba(30, 34, 40, .45); }
+.confirm-dialog h2 { margin: 0 0 8px; }
+.confirm-dialog textarea { width: 100%; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.button.danger { background: #b23b32; border-color: #b23b32; color: #fff; }
+.stock-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 5px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+.stock-ok { background: #e7f2e9; color: #367247; }
+.stock-low { background: #fff2d7; color: #8b661c; }
+.stock-out { background: #fbe9e7; color: #b23b32; }
+.inventory-row-low { background: #fffaf0; }
+.inventory-row-out { background: #fff7f6; }
+.qty-input { width: 110px; }
+.inventory-add { padding: 20px 23px; border-bottom: 1px solid var(--border); }
+.inventory-add .form-grid { align-items: end; }
+.stock-alerts { margin: 0 23px 12px; }
+@media (max-width: 720px) { .table-actions { flex-direction: column; align-items: flex-start; gap: 6px; } }

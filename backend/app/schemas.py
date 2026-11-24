@@ -48,6 +48,33 @@ class CustomerPatch(InputModel):
         return data
 
 
+class ProductCreate(InputModel):
+    name: Name
+    category: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)]
+    unit: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=30)]
+    stock_quantity: float = Field(default=0, ge=0, le=1_000_000, allow_inf_nan=False)
+    low_stock_threshold: float = Field(default=5, ge=0, le=1_000_000, allow_inf_nan=False)
+
+
+class ProductPatch(InputModel):
+    name: Name | None = None
+    category: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=100)] | None = None
+    unit: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=30)] | None = None
+    stock_quantity: float | None = Field(default=None, ge=0, le=1_000_000, allow_inf_nan=False)
+    low_stock_threshold: float | None = Field(default=None, ge=0, le=1_000_000, allow_inf_nan=False)
+
+    @model_validator(mode="before")
+    @classmethod
+    def reject_null(cls, data):
+        if isinstance(data, dict) and any(value is None for value in data.values()):
+            raise ValueError("Product fields cannot be null. Omit a field to leave it unchanged.")
+        return data
+
+
+class CancelOrder(InputModel):
+    reason: Annotated[str, StringConstraints(strip_whitespace=True, max_length=500)] | None = None
+
+
 class ItemInput(InputModel):
     product_id: int = Field(gt=0)
     quantity: float = Field(gt=0, allow_inf_nan=False)
@@ -97,9 +124,11 @@ class OrderPatch(ItemValidation):
 class OutputModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    @field_validator("created_at", "updated_at", "changed_at", mode="before", check_fields=False)
+    @field_validator("created_at", "updated_at", "changed_at", "stock_updated_at", "cancelled_at", mode="before", check_fields=False)
     @classmethod
     def utc_timestamps(cls, value):
+        if value is None:
+            return value
         # SQLite returns naive datetimes; every stored audit value is UTC.
         return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value
 
@@ -119,6 +148,9 @@ class ProductOut(OutputModel):
     name: str
     category: str
     unit: str
+    stock_quantity: float
+    low_stock_threshold: float
+    stock_updated_at: datetime | None
 
 
 class ItemOut(OutputModel):
@@ -146,6 +178,8 @@ class OrderSummary(OutputModel):
     responsible_staff_name: str
     payment_method: str | None
     status: str
+    cancellation_reason: str | None
+    cancelled_at: datetime | None
     created_at: datetime
     updated_at: datetime
 

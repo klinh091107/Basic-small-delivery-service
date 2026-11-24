@@ -1,6 +1,6 @@
 from datetime import date, datetime, timezone
 
-from sqlalchemy import CheckConstraint, Date, DateTime, Float, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Boolean, CheckConstraint, Date, DateTime, Float, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -46,6 +46,9 @@ class Product(Base):
     name: Mapped[str] = mapped_column(String(150))
     category: Mapped[str] = mapped_column(String(100))
     unit: Mapped[str] = mapped_column(String(30))
+    stock_quantity: Mapped[float] = mapped_column(Float, default=0, server_default="0")
+    low_stock_threshold: Mapped[float] = mapped_column(Float, default=5, server_default="5")
+    stock_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, default=utc_now)
 
 
 class Order(AuditFields, Base):
@@ -64,6 +67,11 @@ class Order(AuditFields, Base):
     responsible_staff_name: Mapped[str] = mapped_column(String(150))
     payment_method: Mapped[str | None] = mapped_column(String(20), nullable=True)
     status: Mapped[str] = mapped_column(String(40), index=True)
+    # True only while this order's quantities are held out of stock. Legacy orders
+    # created before inventory tracking stay False, so they never restore phantom stock.
+    inventory_deducted: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+    cancellation_reason: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    cancelled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     customer: Mapped[Customer] = relationship(lazy="joined")
     items: Mapped[list["OrderItem"]] = relationship(cascade="all, delete-orphan", lazy="selectin", order_by="OrderItem.id")
     status_history: Mapped[list["OrderStatusHistory"]] = relationship(cascade="all, delete-orphan", lazy="selectin", order_by="OrderStatusHistory.id")

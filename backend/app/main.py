@@ -11,10 +11,10 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from . import models, schemas
 from .auth import current_employee, require_app_request, router as auth_router
-from .config import STATUSES, STATUS_TRANSITIONS, PAYMENT_METHODS, MAX_ORDER_QUANTITY, STAFF_EXAMPLES
+from .config import CANCELLABLE, STATUSES, STATUS_TRANSITIONS, PAYMENT_METHODS, MAX_ORDER_QUANTITY, STAFF_EXAMPLES
 from .database import engine, get_db
 from .setup_database import initialize_database
-from .services import create_order, get_or_404, update_order
+from .services import cancel_order, create_order, delete_order, get_or_404, update_order
 
 
 @asynccontextmanager
@@ -59,7 +59,7 @@ protected = APIRouter(dependencies=[Depends(current_employee), Depends(require_a
 def configuration():
     return {"statuses": STATUSES, "transitions": STATUS_TRANSITIONS,
             "payment_methods": PAYMENT_METHODS, "max_order_quantity": MAX_ORDER_QUANTITY,
-            "staff_examples": STAFF_EXAMPLES}
+            "staff_examples": STAFF_EXAMPLES, "cancellable": CANCELLABLE}
 
 
 @protected.get("/api/customers", response_model=list[schemas.CustomerOut])
@@ -120,6 +120,34 @@ def products(search: str = "", category: str = "", db: Session = Depends(get_db)
     return db.scalars(query.order_by(models.Product.name)).all()
 
 
+@protected.post("/api/products", response_model=schemas.ProductOut, status_code=201)
+def add_product(payload: schemas.ProductCreate, db: Session = Depends(get_db)):
+    if db.scalar(select(models.Product.id).where(func.lower(models.Product.name) == payload.name.lower(), models.Product.unit == payload.unit)):
+        raise HTTPException(409, "A product with this name and unit already exists.")
+    product = models.Product(**payload.model_dump())
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+    return product
+
+
+@protected.patch("/api/products/{product_id}", response_model=schemas.ProductOut)
+def edit_product(product_id: int, payload: schemas.ProductPatch, db: Session = Depends(get_db)):
+    product = get_or_404(db, models.Product, product_id)
+    changes = payload.model_dump(exclude_unset=True)
+    name, unit = changes.get("name", product.name), changes.get("unit", product.unit)
+    if ("name" in changes or "unit" in changes) and db.scalar(select(models.Product.id).where(
+            func.lower(models.Product.name) == name.lower(), models.Product.unit == unit, models.Product.id != product.id)):
+        raise HTTPException(409, "A product with this name and unit already exists.")
+    for field, value in changes.items():
+        setattr(product, field, round(value, 3) if field == "stock_quantity" else value)
+    if "stock_quantity" in changes:
+        product.stock_updated_at = models.utc_now()
+    db.commit()
+    db.refresh(product)
+    return product
+
+
 def order_search(query, search):
     if search.strip():
         query = query.join(models.Customer).where(or_(
@@ -168,10 +196,19 @@ def edit_order(order_id: int, payload: schemas.OrderPatch, db: Session = Depends
     return order
 
 
+@protected.post("/api/orders/{order_id}/cancel", response_model=schemas.OrderOut)
+def cancel(order_id: int, payload: schemas.CancelOrder, db: Session = Depends(get_db)):
+    order = get_or_404(db, models.Order, order_id)
+    cancel_order(db, order, payload.reason)
+    db.commit()
+    db.refresh(order)
+    return order
+
+
 @protected.delete("/api/orders/{order_id}")
 def remove_order(order_id: int, db: Session = Depends(get_db)):
     order = get_or_404(db, models.Order, order_id)
-    db.delete(order)
+    delete_order(db, order)
     db.commit()
     return {"deleted": True}
 

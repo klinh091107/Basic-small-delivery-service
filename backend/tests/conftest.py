@@ -60,8 +60,8 @@ def records(client, database):
         'email': 'test@example.com', 'address': 'Original address',
     }).json()
     with factory() as db:
-        products = [Product(name='Carrots', category='Vegetables', unit='kg'),
-                    Product(name='Coriander', category='Herbs', unit='bunch')]
+        products = [Product(name='Carrots', category='Vegetables', unit='kg', stock_quantity=1000),
+                    Product(name='Coriander', category='Herbs', unit='bunch', stock_quantity=1000)]
         db.add_all(products)
         db.commit()
         ids = [product.id for product in products]
