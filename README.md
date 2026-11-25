@@ -35,6 +35,9 @@ python -m pip install -r backend/requirements-lock.txt
 # Create the database, sample data, and demo account
 cd backend
 
+# Create the database, sample data, and demo account
+python -m app.seed
+
 # Start the API server
 python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
