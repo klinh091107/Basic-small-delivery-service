@@ -47,7 +47,7 @@ Open a **second terminal** in the project root:
 
 ```bash
 cd frontend
-npm ci
+npm ci or npm ci --cache /tmp/npm-cache    
 npm run dev
 ```
 
